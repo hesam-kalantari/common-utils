@@ -43,4 +43,5 @@ public class StringUtilsTest {
                 () -> StringUtils.addLeadingZero(-2, 2)
         );
     }
+
 }

@@ -1,6 +1,8 @@
 package com.khesam.common.persiandate;
 
 import com.khesam.common.util.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -69,6 +71,36 @@ public class DateModel {
         result = result.replace("MM", StringUtils.addLeadingZero(this.minute, 2));
         result = result.replace("SS", StringUtils.addLeadingZero(this.second, 2));
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DateModel dateModel = (DateModel) o;
+
+        return new EqualsBuilder()
+                .append(year, dateModel.year)
+                .append(day, dateModel.day)
+                .append(hour, dateModel.hour)
+                .append(minute, dateModel.minute)
+                .append(second, dateModel.second)
+                .append(month, dateModel.month)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(year)
+                .append(month)
+                .append(day)
+                .append(hour)
+                .append(minute)
+                .append(second)
+                .toHashCode();
     }
 
     @Override
