@@ -3,10 +3,29 @@ package com.khesam.common.util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StringUtilsTest {
+
+    @Test
+    void test_justDigit() {
+        assertTrue(StringUtils.justDigit("123"));
+    }
+
+    @Test
+    void test_justDigit_failedIfContainChar() {
+        assertFalse(StringUtils.justDigit("12s3"));
+    }
+
+    @Test
+    void test_justDigit_failedIfContainSpace() {
+        assertFalse(StringUtils.justDigit("12 3"));
+    }
+
+    @Test
+    void test_justDigit_failedIfNegativeSign() {
+        assertFalse(StringUtils.justDigit("-123"));
+    }
 
     @Test
     @DisplayName("Ensure leading zero correctly added to the input")
@@ -41,6 +60,22 @@ public class StringUtilsTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> StringUtils.addLeadingZero(-2, 2)
+        );
+    }
+
+    @Test
+    void test_addSingleQuote() {
+        assertEquals(
+                "\'salam\'",
+                StringUtils.addSingleQuote("salam")
+        );
+    }
+
+    @Test
+    void test_addDoubleQuotes() {
+        assertEquals(
+                "\"salam\"",
+                StringUtils.addDoubleQuotes("salam")
         );
     }
 

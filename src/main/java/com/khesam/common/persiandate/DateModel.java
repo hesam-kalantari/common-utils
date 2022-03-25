@@ -1,70 +1,82 @@
 package com.khesam.common.persiandate;
 
 import com.khesam.common.util.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DateModel {
 
-    public int year = 1;
-    public Month month = Month.getByIndex(1);
-    public int day = 1;
-    public int hour = 0;
-    public int minute = 0;
-    public int second = 0;
+    public int year;
+    public Month month;
+    public int day;
+    public int hour;
+    public int minute;
+    public int second;
 
-    private DateModel(@NotNull List<Integer> fields) {
-        if (fields.size() > 0) this.year = fields.get(0);
-
-        if (fields.size() > 1) this.month = Month.getByIndex(fields.get(1));
-
-        if (fields.size() > 2) this.day = fields.get(2);
-
-        if (fields.size() > 3) this.hour = fields.get(3);
-
-        if (fields.size() > 4) this.minute = fields.get(4);
-
-        if (fields.size() > 5) this.second = fields.get(5);
+    private DateModel(int year, int month, int day, int hour, int minute, int second) {
+        if (year < 1 || (month <  1 || month > 12) || (day < 1 || day > 31) ||
+                (hour < 0 || hour > 23) || (minute < 0 || minute > 59) || (second < 0 || second > 59)) {
+            throw new IllegalArgumentException("Invalid date value");
+        }
+        this.year = year;
+        this.month = Month.getByIndex(month);
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
     }
 
-    public DateModel(final Integer... fields) {
-        this(Arrays.asList(fields));
+    public static DateModel getInstance(List<Integer> fields) {
+        int year = 1, month = 1, day = 1, minute = 0, hour = 0, second = 0;
+
+        if (fields.size() > 0) year   = fields.get(0);
+        if (fields.size() > 1) month  = fields.get(1);
+        if (fields.size() > 2) day    = fields.get(2);
+        if (fields.size() > 3) hour   = fields.get(3);
+        if (fields.size() > 4) minute = fields.get(4);
+        if (fields.size() > 5) second = fields.get(5);
+
+        return new DateModel(year, month, day, hour, minute, second);
     }
 
-    public DateModel(final String... fields) {
-        this(Arrays.stream(fields)
-                .map(Integer::valueOf)
-                .collect(Collectors.toList()));
+    public static DateModel getInstance(Integer... fields) {
+        return getInstance(Arrays.asList(fields));
     }
 
-    public DateModel(final @NotNull Calendar calendar) {
-        this(Arrays.asList(
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH) + 1,
-                        calendar.get(Calendar.DAY_OF_MONTH),
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        calendar.get(Calendar.SECOND)
-                )
+    public static DateModel getInstance(Calendar calendar) {
+        return new DateModel(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                calendar.get(Calendar.SECOND)
+        );
+    }
+
+    public static DateModel getInstance(DateModel dateModel) {
+        return new DateModel(
+                dateModel.year,
+                dateModel.month.ordinal() + 1,
+                dateModel.day,
+                dateModel.hour,
+                dateModel.minute,
+                dateModel.second
         );
     }
 
     //yyyy/mm/dd HH:MM:SS
-    public String show(final @NotNull String pattern) {
+    public String show(final String pattern) {
         String result = pattern;
         if (pattern.contains("yyyy"))
             result = result.replace("yyyy", String.valueOf(this.year));
         else if (pattern.contains("yy"))
             result = result.replace("yy", String.valueOf(this.year % 100));
 
-        result = result.replace("mm", StringUtils.addLeadingZero(this.month.index, 2));
+        result = result.replace("mm", StringUtils.addLeadingZero(this.month.ordinal() + 1, 2));
         result = result.replace("dd", StringUtils.addLeadingZero(this.day, 2));
 
         result = result.replace("HH", StringUtils.addLeadingZero(this.hour, 2));
@@ -76,31 +88,27 @@ public class DateModel {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (o == null || getClass() != o.getClass()) return false;
 
         DateModel dateModel = (DateModel) o;
 
-        return new EqualsBuilder()
-                .append(year, dateModel.year)
-                .append(day, dateModel.day)
-                .append(hour, dateModel.hour)
-                .append(minute, dateModel.minute)
-                .append(second, dateModel.second)
-                .append(month, dateModel.month)
-                .isEquals();
+        if (year != dateModel.year) return false;
+        if (day != dateModel.day) return false;
+        if (hour != dateModel.hour) return false;
+        if (minute != dateModel.minute) return false;
+        if (second != dateModel.second) return false;
+        return month == dateModel.month;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(year)
-                .append(month)
-                .append(day)
-                .append(hour)
-                .append(minute)
-                .append(second)
-                .toHashCode();
+        int result = year;
+        result = 31 * result + month.hashCode();
+        result = 31 * result + day;
+        result = 31 * result + hour;
+        result = 31 * result + minute;
+        result = 31 * result + second;
+        return result;
     }
 
     @Override
@@ -108,60 +116,58 @@ public class DateModel {
         return show("yyyymmdd-HH:MM:SS");
     }
 
-    public enum Month {
-        FIRST(1, "January", "فروردین"),
-        SECOND(2, "February", "اردیبهشت"),
-        THIRD(3, "March", "خرداد"),
-        FORTH(4, "April", "تیر"),
-        FIFTH(5, "May", "مرداد"),
-        SIXTH(6, "June", "شهریور"),
-        SEVENTH(7, "July", "مهر"),
-        EIGHTH(8, "August", "آبان"),
-        NINTH(9, "September", "آذر"),
-        TENTH(10, "October", "دی"),
-        ELEVENTH(11, "November", "بهمن"),
-        TWELFTH(12, "December", "اسفند");
+    enum Month {
+        FIRST    (1,  "January",   "فروردین"),
+        SECOND   (2,  "February",  "اردیبهشت"),
+        THIRD    (3,  "March",     "خرداد"),
+        FORTH    (4,  "April",     "تیر"),
+        FIFTH    (5,  "May",       "مرداد"),
+        SIXTH    (6,  "June",      "شهریور"),
+        SEVENTH  (7,  "July",      "مهر"),
+        EIGHTH   (8,  "August",    "آبان"),
+        NINTH    (9,  "September", "آذر"),
+        TENTH    (10, "October",   "دی"),
+        ELEVENTH (11, "November",  "بهمن"),
+        TWELFTH  (12, "December",  "اسفند");
 
         final int index;
         final String englishName;
         final String persianName;
 
-        Month(final int index, final String englishName, final String persianName) {
+        Month(int index, String englishName, String persianName) {
             this.index = index;
             this.englishName = englishName;
             this.persianName = persianName;
         }
 
-        public static Month getByIndex(final int index) {
+        public static Month getByIndex(final int month) {
             return EnumSet.allOf(Month.class).stream()
-                    .filter(e -> e.index == index)
+                    .filter(e -> e.ordinal() == (month - 1))
                     .findAny()
                     .orElseThrow(IllegalArgumentException::new);
         }
     }
 
-    public enum WeekDay {
-        SATURDAY(0, "Saturday", "شنبه"),
-        SUNDAY(1, "Sunday", "یک شنبه"),
-        MONDAY(2, "Monday", "دوشنبه"),
-        TUESDAY(3, "Tuesday", "سه شنبه"),
-        WEDNESDAY(4, "Wednesday", "چهارشنبه"),
-        THURSDAY(5, "Thursday", "پنج شنبه"),
-        FRIDAY(6, "Friday", "جمعه");
+    enum WeekDay {
+        SATURDAY  ("Saturday",  "شنبه"),
+        SUNDAY    ("Sunday",    "یک شنبه"),
+        MONDAY    ("Monday",    "دوشنبه"),
+        TUESDAY   ("Tuesday",   "سه شنبه"),
+        WEDNESDAY ("Wednesday", "چهارشنبه"),
+        THURSDAY  ("Thursday",  "پنج شنبه"),
+        FRIDAY    ("Friday",    "جمعه");
 
-        final int index;
         final String englishName;
         final String persianName;
 
-        WeekDay(final int index, final String englishName, final String persianName) {
-            this.index = index;
+        WeekDay(final String englishName, final String persianName) {
             this.englishName = englishName;
             this.persianName = persianName;
         }
 
         public static WeekDay getByIndex(final int index) {
             return EnumSet.allOf(WeekDay.class).stream()
-                    .filter(e -> e.index == index)
+                    .filter(e -> e.ordinal() == (index - 1))
                     .findAny()
                     .orElseThrow(IllegalArgumentException::new);
         }
