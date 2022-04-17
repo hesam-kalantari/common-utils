@@ -8,28 +8,28 @@ import static org.junit.jupiter.api.Assertions.*;
 public class StringUtilsTest {
 
     @Test
-    void test_justDigit() {
+    void justDigit() {
         assertTrue(StringUtils.justDigit("123"));
     }
 
     @Test
-    void test_justDigit_failedIfContainChar() {
+    void justDigit_falseIfContainChar() {
         assertFalse(StringUtils.justDigit("12s3"));
     }
 
     @Test
-    void test_justDigit_failedIfContainSpace() {
+    void justDigit_falseIfContainSpace() {
         assertFalse(StringUtils.justDigit("12 3"));
     }
 
     @Test
-    void test_justDigit_failedIfNegativeSign() {
+    void justDigit_falseIfContainNegativeSign() {
         assertFalse(StringUtils.justDigit("-123"));
     }
 
     @Test
     @DisplayName("Ensure leading zero correctly added to the input")
-    void test_addLeadingZero() {
+    void addLeadingZero() {
         assertEquals(
                 "02",
                 StringUtils.addLeadingZero(2, 2)
@@ -38,7 +38,7 @@ public class StringUtilsTest {
 
     @Test
     @DisplayName("Ensure leading zero not added as its size equal to length")
-    void test_addLeadingZero_nothingAddedAsInputSizeEqualToLength() {
+    void addLeadingZero_nothingAddedAsInputSizeEqualToLength() {
         assertEquals(
                 "1369",
                 StringUtils.addLeadingZero(1369, 4)
@@ -47,7 +47,7 @@ public class StringUtilsTest {
 
     @Test
     @DisplayName("Ensure leading zero not added as its size greater than length")
-    void test_addLeadingZero_nothingAddedAsInputSizeGreaterThanLength() {
+    void addLeadingZero_nothingAddedAsInputSizeGreaterThanLength() {
         assertEquals(
                 "1369",
                 StringUtils.addLeadingZero(1369, 3)
@@ -56,7 +56,7 @@ public class StringUtilsTest {
 
     @Test
     @DisplayName("Ensure leading zero failed for negative input")
-    void test_addLeadingZero_negativeNumber_failed() {
+    void addLeadingZero_throwExceptionIfInputIsNegativeNumber() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> StringUtils.addLeadingZero(-2, 2)
@@ -64,7 +64,31 @@ public class StringUtilsTest {
     }
 
     @Test
-    void test_addSingleQuote() {
+    void removeLeadingChar() {
+        assertEquals(
+                "originalText",
+                StringUtils.removeLeadingChar("&&&&&&&&&originalText", '&')
+        );
+    }
+
+    @Test
+    void removeLeadingChar_nothingRemoveIfRemovalIsNotLeading() {
+        assertEquals(
+                "original&&&&&Text",
+                StringUtils.removeLeadingChar("original&&&&&Text", '&')
+        );
+    }
+
+    @Test
+    void removeLeadingZero() {
+        assertEquals(
+                "12345",
+                StringUtils.removeLeadingZero("0012345")
+        );
+    }
+
+    @Test
+    void addSingleQuote() {
         assertEquals(
                 "\'salam\'",
                 StringUtils.addSingleQuote("salam")
@@ -72,7 +96,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    void test_addDoubleQuotes() {
+    void addDoubleQuotes() {
         assertEquals(
                 "\"salam\"",
                 StringUtils.addDoubleQuotes("salam")
