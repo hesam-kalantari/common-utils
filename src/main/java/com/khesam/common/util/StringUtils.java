@@ -13,7 +13,29 @@ public class StringUtils {
     }
 
     public static boolean justDigit(String input) {
-        return StringUtils.isEmpty(input) || input.matches("[0-9]+");
+        return isEmpty(input) || input.matches("[0-9]+");
+    }
+
+    public static boolean justLetter(String input) {
+        if (isEmpty(input))
+            return true;
+        char[] chars = input.toCharArray();
+        for (char ch : chars)
+            if (!Character.isLetter(ch))
+                return false;
+        return true;
+    }
+
+    public static boolean isPersian(String input) {
+        if (isEmpty(input))
+            return true;
+        for (int i = 0; i < Character.codePointCount(input, 0, input.length()); i++) {
+            int c = input.codePointAt(i);
+            if ((c < 0x600 || c > 0x6FF) && c != 0xFB8A && c != 0x200C && c != 0x200F && c != 0x0020) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static String addLeadingZero(int input, int length) {
@@ -26,7 +48,7 @@ public class StringUtils {
     }
 
     public static String removeLeadingChar(String input, char removalChar) {
-        if (StringUtils.isEmpty(input))
+        if (isEmpty(input))
             return EmptyString;
         while (input.length() > 1 && input.charAt(0) == removalChar)
             input = input.substring(1);
@@ -38,7 +60,11 @@ public class StringUtils {
     }
 
     public static String removeLeadingWhitespace(String input) {
-        return StringUtils.removeLeadingChar(input, ' ');
+        if (isEmpty(input))
+            return EmptyString;
+        while (input.length() > 1 && Character.isWhitespace(input.charAt(0)))
+            input = input.substring(1);
+        return input;
     }
 
     public static String addSingleQuote(String input) {

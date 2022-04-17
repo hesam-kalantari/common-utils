@@ -28,6 +28,82 @@ public class StringUtilsTest {
     }
 
     @Test
+    void justLetter() {
+        assertTrue(StringUtils.justLetter("sAlaM"));
+    }
+
+    @Test
+    void justLetter_falseIfContainDigit() {
+        assertFalse(StringUtils.justLetter("james007"));
+    }
+
+    @Test
+    void justLetter_trueIfContainWhiteSpace() {
+        assertFalse(StringUtils.justLetter("james\tbond"));
+    }
+
+    @Test
+    void justLetter_trueIfContainSymbol() {
+        assertFalse(StringUtils.justLetter("james@bond"));
+    }
+
+    @Test
+    void justLetter_trueIfContainPersianChars() {
+        assertFalse(StringUtils.justLetter("سلام James"));
+    }
+
+    @Test
+    void isPersian() {
+        assertTrue(StringUtils.isPersian("سلام"));
+    }
+
+    @Test
+    void isPersian_trueIfContainZhe() {
+        assertTrue(StringUtils.isPersian("ژاله"));
+    }
+
+    @Test
+    void isPersian_trueIfContainPe() {
+        assertTrue(StringUtils.isPersian("پشم"));
+    }
+
+    @Test
+    void isPersian_trueIfContainGe() {
+        assertTrue(StringUtils.isPersian("بگا"));
+    }
+
+    @Test
+    void isPersian_falseIfContainLatinChar() {
+        assertFalse(StringUtils.isPersian("سلام James"));
+    }
+
+    @Test
+    void isPersian_falseIfContainDigit() {
+        assertFalse(StringUtils.isPersian("سلام 007"));
+    }
+
+    @Test
+    void isPersian_falseIfContainSymbol() {
+        assertFalse(StringUtils.isPersian("سلام جیمز@باند"));
+    }
+
+    @Test
+    void isPersian_trueIfContainWhiteSpace() {
+        assertTrue(StringUtils.isPersian("سلام جیمز"));;
+    }
+
+    @Test
+    void isPersian_falseIfContainTabChar() {
+        assertFalse(StringUtils.isPersian("\t سلام"));
+    }
+
+    @Test
+    void isPersian_falseIfContainCarriageReturnChar() {
+        assertFalse(StringUtils.isPersian("\n سلام"));
+    }
+
+
+    @Test
     @DisplayName("Ensure leading zero correctly added to the input")
     void addLeadingZero() {
         assertEquals(
@@ -84,6 +160,54 @@ public class StringUtilsTest {
         assertEquals(
                 "12345",
                 StringUtils.removeLeadingZero("0012345")
+        );
+    }
+
+    @Test
+    void removeLeadingWhitespace() {
+        assertEquals(
+                "salam salam",
+                StringUtils.removeLeadingWhitespace("    salam salam")
+        );
+    }
+
+    @Test
+    void removeLeadingWhitespace_removeLeadingTabChar() {
+        assertEquals(
+                "salam salam",
+                StringUtils.removeLeadingWhitespace("\tsalam salam")
+        );
+    }
+
+    @Test
+    void removeLeadingWhitespace_removeCarriageReturnChar() {
+        assertEquals(
+                "salam salam",
+                StringUtils.removeLeadingWhitespace("\rsalam salam")
+        );
+    }
+
+    @Test
+    void removeLeadingWhitespace_removeLineFeedChar() {
+        assertEquals(
+                "salam salam",
+                StringUtils.removeLeadingWhitespace("\nsalam salam")
+        );
+    }
+
+    @Test
+    void removeLeadingWhitespace_removeFormFeedChar() {
+        assertEquals(
+                "salam salam",
+                StringUtils.removeLeadingWhitespace("\fsalam salam")
+        );
+    }
+
+    @Test
+    void removeLeadingWhitespace_removeDifferentWhitespaceChars() {
+        assertEquals(
+                "salam salam",
+                StringUtils.removeLeadingWhitespace(" \f\t \n   \rsalam salam")
         );
     }
 
